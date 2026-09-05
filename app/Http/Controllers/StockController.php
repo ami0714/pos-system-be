@@ -3,15 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Services\StockService;
 class StockController extends Controller
 {
+    protected StockService $StockService;
+
+
+    public function __construct(StockService $StockService)
+    {
+
+
+        $this->StockService = $StockService;
+    }
       /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function getProductLog(Request $request)
     {
-        //
+    $typeFilter = $request->query('type',null);
+    $startDate = $request->query('startDate',null);
+    $endDate = $request->query('endDate',null);
+
+    $respone = $this->StockService->getLogProduct($typeFilter,$startDate,$endDate);
+
+
+    return response()->json([
+        'status' => true,
+        'data' => $respone
+    ]);
+
+
+
     }
 
     /**

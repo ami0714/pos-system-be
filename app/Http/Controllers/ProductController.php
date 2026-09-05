@@ -44,15 +44,31 @@ public function __construct(ProductService $ProductService)
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function getByBarcode(Request $request)
     {
-        //
+      $barcode = $request->query('barcode');
+      $parseBarcode =(int) $barcode;
+
+        $responseProduct = $this->ProductService->getProductByBarcode($barcode);
+
+        if (!empty($responseProduct)) {
+            return response()->json([
+                'status' => true,
+                'data' => $responseProduct
+            ]);
+        }else {
+ return response()->json([
+            'status' => false,
+            'message' => 'gagal dapatkan data produk'
+            
+        ]);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function get(Request $request)
     {
         //
     }

@@ -17,9 +17,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //User
     Route::get('/user',[UserController::class, 'getUser']);
 
-    // Products
+    // Products 
     Route::get('/products/{categoryId}/', [ProductController::class, 'index']);
-    Route::post('/products', [ProductController::class, 'store']);
+    Route::get('/products', [ProductController::class, 'getByBarcode']);
+    Route::post('/products/add', [ProductController::class, 'store']);
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     Route::get('/products/{id}/barcode', [ProductController::class, 'getByBarcode']);
@@ -37,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/sales/{id}/void', [SaleController::class, 'void']);
 
     // Stock Management
+    Route::get('/stock', [StockController::class, 'getProductLog']);
     Route::post('/stock/in', [StockController::class, 'stockIn']);
     Route::put('/stock/adjust/{id}', [StockController::class, 'adjust']);
     Route::get('/stock/movements', [StockController::class, 'movements']);

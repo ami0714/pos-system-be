@@ -57,5 +57,35 @@ class ProductService
             'data' => $products,
         ];
     }
+    
+    public function getProductByBarcode($barcode){
+             if (empty($barcode)) {
+            return [
+                'status' => false,
+                'message' => 'data kosong',
+                'barcode' => $barcode
+            ];
+        }
+
+        $query = 'SELECT 
+                    p.id,
+                    p.barcode,
+                    p.name,
+                    c.name AS category,
+                    p.purchase_price AS cost_price,
+                    p.selling_price AS sell_price,
+                    p.stock_quantity AS stock,
+                    p.min_stock,
+                    p.unit,
+                    p.created_at,
+                    p.updated_at
+
+                    
+                     FROM  products p
+                     LEFT JOIN  categories c ON p.category_id = c.id
+                     WHERE barcode = :barcode';
+
+                      return DB::selectOne($query,['barcode'=> $barcode]);
+    }
 }
 
