@@ -3,9 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\SaleService;
 
 class SaleController extends Controller
 {
+    protected SaleService $saleService;
+
+
+    public function __construct(SaleService $saleService)
+    {
+        $this->saleService = $saleService;
+    }
+
     //
       /**
      * Display a listing of the resource.
@@ -26,9 +35,19 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function checkout(Request $request)
     {
-        //
+            $items = $request->input('items');
+            $total = $request->input('total');
+            $paymentMethod = $request->input('paymentMethod');
+            $paidAmount = $request->input('paidAmount');
+            $balance = $request->input('balance');
+            $discount = $request->input('discount');
+            $adminId = $request->user()->id;
+
+            $response = $this->saleService->checkout($items, $total, $paymentMethod, $paidAmount, $balance, $discount,$adminId);
+
+                return response()->json($response);
     }
 
     /**

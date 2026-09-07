@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Sales / POS
     Route::get('/sales', [SaleController::class, 'index']);
-    Route::post('/sales', [SaleController::class, 'store']); // Checkout
+    Route::post('/sales/checkout', [SaleController::class, 'checkout']); // Checkout
     Route::get('/sales/{id}', [SaleController::class, 'show']);
     Route::put('/sales/{id}/void', [SaleController::class, 'void']);
 
