@@ -42,7 +42,7 @@ class SaleController extends Controller
             $paymentMethod = $request->input('paymentMethod');
             $paidAmount = $request->input('paidAmount');
             $balance = $request->input('balance');
-            $discount = $request->input('discount');
+            $discount = $request->input('discount') ?? 0; // Jika tiada diskaun, tetapkan kepada 0
             $adminId = $request->user()->id;
 
             $response = $this->saleService->checkout($items, $total, $paymentMethod, $paidAmount, $balance, $discount,$adminId);

@@ -24,7 +24,9 @@ class StockService
                     FROM stock_movements sm
                     JOIN products p ON sm.product_id = p.id
                     JOIN users u ON sm.user_id = u.id
+                    ORDER BY sm.created_at DESC
         ';
+
 
         $conditions = [];
         $bindings = [];
