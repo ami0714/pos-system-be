@@ -98,6 +98,7 @@ class SaleService
                     'name' => $product[0]->name,
                     'price' => (float) $product[0]->selling_price,
                     'qty' => (int) $item['qty'],
+                    'subtotal' => (float) $itemSubtotal,
                 ];
             }
 
@@ -122,5 +123,75 @@ class SaleService
                 ],
             ];
         });
+    }
+
+    function getSaleHistory()
+    {
+        $sales = DB::select('SELECT 
+                    s.id,
+                    s.invoice_number,
+                    u.name AS cashier,
+                    s.subtotal,
+                    s.discount,
+                    s.grand_total,
+                    s.paid_amount,
+                    s.change_amount,
+                    s.payment_method,
+                    s.status,
+                    s.created_at
+                FROM sales s
+                JOIN users u ON s.user_id = u.id
+                ORDER BY s.created_at DESC');
+        return $sales;
+    }
+
+        
+    function getReceipt($id)
+    {
+        $receipt = DB::select('SELECT 
+                    s.id,
+                    s.invoice_number,
+                    u.name AS cashier,
+                    s.subtotal,
+                    s.discount,
+                    s.grand_total,
+                    s.paid_amount,
+                    s.change_amount,
+                    s.payment_method,
+                    s.status,
+                    s.created_at
+                FROM sales s
+                JOIN users u ON s.user_id = u.id
+                WHERE s.id = ?
+                ORDER BY s.created_at DESC', [$id]);
+
+        if (empty($receipt)) {
+            return [
+                'status' => false,
+                'message' => 'Resit tidak dijumpai.'
+            ];
+        }
+
+        $items = DB::select('SELECT 
+                    si.product_id,
+                    p.name AS name,
+                    si.quantity AS qty,
+                    si.sell_price AS price,
+                    si.subtotal AS subtotal
+                FROM sale_items si
+                JOIN products p ON si.product_id = p.id
+                WHERE si.sale_id = ?', [$id]);
+
+        return [
+                    'id' => $receipt[0]->id,
+                    'invoice_no' => $receipt[0]->invoice_number,
+                    'date' => date('d/m/Y', strtotime($receipt[0]->created_at)),
+                    'cashier' => $receipt[0]->cashier,
+                    'payment' => $receipt[0]->payment_method === 'CASH' ? 'Cash' : $receipt[0]->payment_method,
+                    'total' => (float) $receipt[0]->grand_total,
+                    'status' => $receipt[0]->status,
+                    'items' => $items,
+                    'payment_method' => $receipt[0]->payment_method
+        ];
     }
 }

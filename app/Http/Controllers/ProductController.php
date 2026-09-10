@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\ProductBarcodeRequest;
+use App\Http\Requests\ProductCategoryRequest;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Exception;
@@ -20,7 +24,7 @@ public function __construct(ProductService $ProductService)
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, $categoryId)
+    public function index(ProductCategoryRequest $request, $categoryId)
     {
      
        $stockStatus = $request->query('stock');
@@ -44,7 +48,7 @@ public function __construct(ProductService $ProductService)
     /**
      * Show the form for creating a new resource.
      */
-    public function getByBarcode(Request $request)
+    public function getByBarcode(ProductBarcodeRequest $request)
     {
       $barcode = $request->query('barcode');
       $parseBarcode =(int) $barcode;
@@ -68,10 +72,92 @@ public function __construct(ProductService $ProductService)
     /**
      * Store a newly created resource in storage.
      */
-    public function get(Request $request)
+    public function addProduct(ProductStoreRequest $request)
     {
-        //
+        $barcode = $request->input('barcode');
+        $name = $request->input('name');
+        $categoryId =(int) $request->input('category');
+        $costPrice = $request->input('cost_price');
+        $sellingPrice = $request->input('sell_price');
+        $stockQuantity = $request->input('stock', 0);
+        $minStock = $request->input('min_stock', 0);
+        $unitId = (int) $request->input('unit');
+
+        
+
+        if (!$categoryId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Kategori tidak ditemukan.'
+            ], 422);
+        }
+
+       
+
+        if (!$unitId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unit tidak ditemukan.'
+            ], 422);
+        }
+
+        $response = $this->ProductService->addProduct(
+            $barcode,
+            $name,
+            $categoryId,
+            $costPrice,
+            $sellingPrice,
+            $stockQuantity,
+            $minStock,
+            $unitId
+        );
+
+        return response()->json($response);
     }
+    public function editProduct(ProductUpdateRequest $request,$productId)
+    {
+        $barcode = $request->input('barcode');
+        $name = $request->input('name');
+        $categoryId =(int) $request->input('category');
+        $costPrice = $request->input('cost_price');
+        $sellingPrice = $request->input('sell_price');
+        $stockQuantity = $request->input('stock', 0);
+        $minStock = $request->input('min_stock', 0);
+        $unitId = (int) $request->input('unit');
+
+        
+
+        if (!$categoryId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Kategori tidak ditemukan.'
+            ], 422);
+        }
+
+       
+
+        if (!$unitId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unit tidak ditemukan.'
+            ], 422);
+        }
+
+        $response = $this->ProductService->editProduct(
+            $barcode,
+            $name,
+            $categoryId,
+            $costPrice,
+            $sellingPrice,
+            $stockQuantity,
+            $minStock,
+            $unitId,
+            $productId
+        );
+
+        return response()->json($response);
+    }
+
 
     /**
      * Display the specified resource.
@@ -92,7 +178,7 @@ public function __construct(ProductService $ProductService)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ProductUpdateRequest $request, string $id)
     {
         //
     }

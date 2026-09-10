@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StockAdjustRequest;
+use App\Http\Requests\StockLogRequest;
+use App\Http\Requests\StockStockInRequest;
 use Illuminate\Http\Request;
 use App\Services\StockService;
 class StockController extends Controller
@@ -18,7 +21,7 @@ class StockController extends Controller
       /**
      * Display a listing of the resource.
      */
-    public function getProductLog(Request $request)
+    public function getProductLog(StockLogRequest $request)
     {
     $typeFilter = $request->query('type',null);
     $startDate = $request->query('startDate',null);
@@ -37,19 +40,38 @@ class StockController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store stock movement in.
      */
-    public function create()
+    public function stockIn(StockStockInRequest $request,$productId)
     {
-        //
+        
+        $quantity = $request->input('stock');
+        $type = $request->query('type');
+        $sellPrice = $request->input('sell_price', null);
+        $buyPrice = $request->input('cost_price', null);
+        $note = $request->input('note', null);
+        $adminId = $request->user()->id;
+
+        $response = $this->StockService->stockIn($productId, $quantity,$sellPrice,$buyPrice, $type, $note,$adminId);
+
+        return response()->json($response);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Adjust stock.
      */
-    public function store(Request $request)
+    public function adjust(StockAdjustRequest $request,$productId)
     {
-        //
+         $quantity = $request->input('stock');
+        $type = $request->query('type');
+        $sellPrice = $request->input('sell_price', null);
+        $buyPrice = $request->input('cost_price', null);
+        $note = $request->input('note', null);
+        $adminId = $request->user()->id;
+
+        $response = $this->StockService->stockAdjust($productId, $quantity,$sellPrice,$buyPrice, $type, $note,$adminId);
+
+        return response()->json($response);
     }
 
     /**

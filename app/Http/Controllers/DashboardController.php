@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\DashboardIndexRequest;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class DashboardController extends Controller
         $this->DashboardService = $DashboardService;
     }
      
-    public function getDashboard(Request $request)
+    public function getDashboard(DashboardIndexRequest $request)
     {
 
      $filter = $request->query('filter');

@@ -24,14 +24,14 @@ class ProductService
                     p.selling_price AS sell_price,
                     p.stock_quantity AS stock,
                     p.min_stock,
-                    p.unit,
+                    u.name AS unit,
                     p.created_at,
                     p.updated_at
 
-                    
-                     FROM  products p
-                     LEFT JOIN  categories c ON p.category_id = c.id
-                     WHERE 1 ';
+                     FROM products p
+                     LEFT JOIN categories c ON p.category_id = c.id
+                     LEFT JOIN units u ON p.unit_id = u.id
+                     WHERE 1 AND p.stock_quantity >=0 ';
         $bindings = [];
 
 
@@ -72,20 +72,66 @@ class ProductService
                     p.barcode,
                     p.name,
                     c.name AS category,
+                    c.id AS category_id,
                     p.purchase_price AS cost_price,
                     p.selling_price AS sell_price,
                     p.stock_quantity AS stock,
                     p.min_stock,
-                    p.unit,
+                    u.name AS unit,
+                    u.id AS unitId,
                     p.created_at,
                     p.updated_at
 
-                    
-                     FROM  products p
-                     LEFT JOIN  categories c ON p.category_id = c.id
+                     FROM products p
+                     LEFT JOIN categories c ON p.category_id = c.id
+                     LEFT JOIN units u ON p.unit_id = u.id
                      WHERE barcode = :barcode';
 
                       return DB::selectOne($query,['barcode'=> $barcode]);
+    }
+
+
+    public function addProduct( $barcode,
+            $name,
+            $categoryId,
+            $costPrice,
+            $sellingPrice,
+            $stockQuantity,
+            $minStock,
+            $unitId)
+    {
+        return DB::transaction(function () use ($barcode, $name, $categoryId, $costPrice, $sellingPrice, $stockQuantity, $minStock, $unitId) {
+            // Insert the new product into the products table
+            DB::insert('INSERT INTO products (barcode, name, category_id, purchase_price, selling_price, stock_quantity, min_stock, unit_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [$barcode, $name, $categoryId, $costPrice, $sellingPrice, $stockQuantity, $minStock, $unitId]);
+
+            return [
+                'status' => true,
+                'message' => 'Product added successfully.',
+            ];
+        });
+    }
+
+     public function editProduct( $barcode,
+            $name,
+            $categoryId,
+            $costPrice,
+            $sellingPrice,
+            $stockQuantity,
+            $minStock,
+            $unitId,
+            $productId)
+    {
+        return DB::transaction(function () use ($barcode, $name, $categoryId, $costPrice, $sellingPrice, $stockQuantity, $minStock, $unitId, $productId) {
+            DB::update(
+                'UPDATE products SET barcode = ?, name = ?, category_id = ?, purchase_price = ?, selling_price = ?, stock_quantity = ?, min_stock = ?, unit_id = ? WHERE id = ?',
+                [$barcode, $name, $categoryId, $costPrice, $sellingPrice, $stockQuantity, $minStock, $unitId, $productId]
+            );
+
+            return [
+                'status' => true,
+                'message' => 'Product updated successfully.',
+            ];
+        });
     }
 }
 

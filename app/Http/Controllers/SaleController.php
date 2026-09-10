@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaleCheckoutRequest;
 use Illuminate\Http\Request;
 use App\Services\SaleService;
 
@@ -19,10 +20,21 @@ class SaleController extends Controller
       /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
+    public function getSaleHistory(){
+        $sales = $this->saleService->getSaleHistory();
+        return response()->json([
+            'status' => true,
+            'sales' => $sales
+        ]);
     }
+    public function getReceipt($id){
+        $receipt = $this->saleService->getReceipt($id);
+        return response()->json([
+            'status' => true,
+            'receipt' => $receipt
+        ]);
+    }   
+    
 
     /**
      * Show the form for creating a new resource.
@@ -35,7 +47,7 @@ class SaleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function checkout(Request $request)
+    public function checkout(SaleCheckoutRequest $request)
     {
             $items = $request->input('items');
             $total = $request->input('total');

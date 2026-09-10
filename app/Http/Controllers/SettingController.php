@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SettingUpdateRequest;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -11,7 +12,7 @@ class SettingController extends Controller
         return response()->json([]);
     }
 
-    public function update(Request $request)
+    public function update(SettingUpdateRequest $request)
     {
         return response()->json([]);
     }

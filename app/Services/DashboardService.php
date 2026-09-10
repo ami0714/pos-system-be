@@ -116,12 +116,13 @@ class DashboardService
 
         $query = "SELECT
                 p.name,
-                p.unit,
+                u.name AS unit,
                 COALESCE(SUM(s.quantity), 0) AS sold,
                 COALESCE(SUM((s.sell_price - s.buy_price) * s.quantity), 0) AS profit
                 FROM products p
                 LEFT JOIN sale_items s ON p.id = s.product_id
-                GROUP BY p.id, p.name, p.unit
+                LEFT JOIN units u ON p.unit_id = u.id
+                GROUP BY p.id, p.name, u.name
                 ORDER BY profit DESC
                 LIMIT 5";
 
